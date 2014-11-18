@@ -11,7 +11,6 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-// extends.defaultCorsHeaders = defaultCorsHeaders;
 
 
 var requestHandler = function(request, response) {
@@ -33,45 +32,48 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
-
-  // The outgoing status.
   var statusCode = 200;
+  var headers = defaultCorsHeaders;
+  headers["Content-Type"] = "application/json";
+  var messages = [];
+  var data = {results: messages};
+  var router = {
+    "/classes/messages": 1,
+    "/classes/room1": 1
+  };
+  // The outgoing status.
 
   // See the note below about CORS headers.
-  var messages = [{}];
-  var headers = defaultCorsHeaders;
   // Tell the client we are sending them plain text.
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = "application/json";
-
-  console.log(request);
-
-  var data = {results: messages};
-
-  var router = {
-    '/classes/messages': 1
-  };
 
   var handler = router[url.parse(request.url).pathname];
-  console.log('handler', handler);
+
   if (handler) {
     if (request.method === "GET") {
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify(data));
     } else if (request.method === "POST") {
-      var statusCode = 201;
-      var content = '';
-      response.on('data', function(data) {
-        content += data;
+      statusCode = 201;
+      var body = "";
+      request.on("data", function(data) {
+        body += data;
       });
-      response.end('')
-    } else {
-      var statusCode = 404;
+      request.on("end", function() {
+        var parseBody = JSON.parse(body);
+        console.log("parseBody", parseBody);
+        messages.push(parseBody);
+        console.log("messages", messages);
+      });
       response.writeHead(statusCode, headers);
-      response.end();
+      response.end(JSON.stringify(data));
     }
+  } else {
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end();
   }
 
   // .writeHead() writes to the request line and headers of the response,
@@ -84,7 +86,6 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
 };
 
 exports.requestHandler = requestHandler;

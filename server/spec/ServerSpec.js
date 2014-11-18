@@ -57,7 +57,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should accept posts to /classes/room', function() {
+  it('Should accept posts to /classes/room1', function() {
     var stubMsg = {
       username: 'Jono',
       message: 'Do my bidding!'
@@ -103,7 +103,7 @@ it('Should respond with messages that were previously posted', function() {
   });
 
 
-  it('Should 404 when asked for a nonexistent file', function() {
+  it('Should 404 when asked for a nonexistent file ***', function() {
     var req = new stubs.request('/arglebargle', 'GET');
     var res = new stubs.response();
 
