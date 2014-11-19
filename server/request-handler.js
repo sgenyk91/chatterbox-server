@@ -12,48 +12,28 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var messages = [];
+var url = require("url");
 
 var requestHandler = function(request, response) {
-  // Request and Response come from node's http module.
-  //
-  // They include information about both the incoming request, such as
-  // headers and URL, and about the outgoing response, such as its status
-  // and content.
-  //
-  // Documentation for both request and response can be found in the HTTP section at
-  // http://nodejs.org/documentation/api/
 
-  // Do some basic logging.
-
-  var url = require("url");
-
-
-  // Adding more logging to your server can be an easy way to get passive
-  // debugging help, but you should always be careful about leaving stray
-  // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
+
   var statusCode = 200;
   var headers = defaultCorsHeaders;
   headers["Content-Type"] = "application/json";
-  var messages = [];
   var data = {results: messages};
   var router = {
     "/classes/messages": 1,
     "/classes/room1": 1
   };
-  // The outgoing status.
-
-  // See the note below about CORS headers.
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
 
   var handler = router[url.parse(request.url).pathname];
 
   if (handler) {
     if (request.method === "GET") {
       response.writeHead(statusCode, headers);
+      console.log(JSON.stringify(data));
       response.end(JSON.stringify(data));
     } else if (request.method === "POST") {
       statusCode = 201;
@@ -62,13 +42,15 @@ var requestHandler = function(request, response) {
         body += data;
       });
       request.on("end", function() {
+        // console.log(body);
         var parseBody = JSON.parse(body);
-        console.log("parseBody", parseBody);
         messages.push(parseBody);
-        console.log("messages", messages);
       });
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify(data));
+    } else if (request.method === 'OPTIONS') {
+      response.writeHead(statusCode, headers);
+      response.end();
     }
   } else {
     statusCode = 404;

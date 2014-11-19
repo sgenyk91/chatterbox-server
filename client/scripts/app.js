@@ -18,7 +18,7 @@ var app = {
       }, 30000);
     });
   },
-  server: 'https://api.parse.com/1/classes/chatterbox',
+  server: 'http://127.0.0.1:3000/classes/messages',
   fetch : function() {
     $.ajax({
       // always use this url
@@ -70,7 +70,7 @@ var app = {
   send : function(message){
     $.ajax({
       // always use this url
-      url: 'https://api.parse.com/1/classes/chatterbox',
+      url: 'http://127.0.0.1:3000/classes/messages',
       type: 'POST',
       data: message,
       contentType: 'application/json',
@@ -115,7 +115,7 @@ var app = {
   // },
   getMessage : function() {
     var message = document.getElementById('inputMessage').value;
-    var obj = {'username': 'Silvia',
+    var obj = {'username': 'Micphan',
               'text' : message,
               'roomname' : $('#createRoom').val()
               };

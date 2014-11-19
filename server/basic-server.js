@@ -17,7 +17,8 @@ var port = 3000;
 var ip = "127.0.0.1";
 
 // var router = {
-//   '/classes/messages': requiringRequestHandler
+//   '/classes/messages': requiringRequestHandler,
+//   '/classes/room1': requiringRequestHand
 // };
 // We use node's http module to create a server.
 //
